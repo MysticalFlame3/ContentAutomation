@@ -4,31 +4,48 @@ FROM php:8.2-cli
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
+    libzip-dev \
     libsqlite3-dev \
-    && docker-php-ext-install pdo pdo_sqlite
+    && docker-php-ext-install \
+        pdo \
+        pdo_sqlite \
+        zip \
+        mbstring \
+        bcmath
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Allow Composer to run as root
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files first (important for caching)
+# Copy composer files first
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies WITHOUT running scripts
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+# Install PHP dependencies (no scripts yet)
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-scripts \
+    --no-interaction
 
-# Copy rest of the application
+# Copy rest of application
 COPY . .
 
-# Ensure required directories exist
-RUN mkdir -p storage/framework/{cache,sessions,views} bootstrap/cache
+# Create required directories
+RUN mkdir -p \
+    storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/views \
+    bootstrap/cache
 
-# Ensure SQLite DB exists
+# Ensure SQLite database exists
 RUN mkdir -p database && touch database/database.sqlite
 
-# Generate app key AFTER files exist
+# Generate app key
 RUN php artisan key:generate
 
 # Run migrations
