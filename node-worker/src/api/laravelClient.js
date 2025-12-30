@@ -23,4 +23,14 @@ const updateArticle = async (id, data) => {
     }
 };
 
-module.exports = { fetchArticles, updateArticle };
+const fetchArticleById = async (id) => {
+    try {
+        const response = await axios.get(`${API_URL}/articles/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching article ${id}:`, error.message);
+        return null;
+    }
+};
+
+module.exports = { fetchArticles, fetchArticleById, updateArticle };

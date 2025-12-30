@@ -1,4 +1,4 @@
-const { fetchArticles, updateArticle } = require('./api/laravelClient');
+const { fetchArticles, fetchArticleById, updateArticle } = require('./api/laravelClient');
 const { getTopLinks } = require('./google/googleSearch');
 const { scrapeContent } = require('./scraper/articleScraper');
 const { rewriteArticle } = require('./llm/geminiClient');
@@ -6,12 +6,30 @@ const { rewriteArticle } = require('./llm/geminiClient');
 const main = async () => {
     console.log("Starting Node Worker");
 
-    // 1. Fetch articles from Laravel
-    const articles = await fetchArticles();
-    console.log(`Fetched ${articles.length} articles.`);
+    const targetId = process.argv[2]; // Check for ID argument
+    let articles = [];
+
+    if (targetId) {
+        console.log(`Targeting specific article ID: ${targetId}`);
+        const article = await fetchArticleById(targetId);
+        if (article) {
+            articles = [article];
+        } else {
+            console.error(`Article ${targetId} not found.`);
+            process.exit(1);
+        }
+    } else {
+        // 1. Fetch all articles from Laravel
+        articles = await fetchArticles();
+        console.log(`Fetched ${articles.length} articles.`);
+    }
 
     for (const article of articles) {
-        if (article.status === 'UPDATED') {
+        // If targeting a specific ID, we might want to force update even if status is UPDATED.
+        // But the user didn't explicitly say force. However, "Fetch Updates" button usually implies "Do it".
+        // Let's allow re-processing if a targetId is given, OR if status is not UPDATED.
+
+        if (!targetId && article.status === 'UPDATED') {
             console.log(`Skipping Article ${article.id} (already updated).`);
             continue;
         }

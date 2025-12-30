@@ -1,0 +1,17 @@
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+Starting Node Worker
+Targeting specific article ID: 4
+Processing Article: Boost Your Sales with Messenger Chatbots
+Found 2 competitor links: [
+  'https://beyondchats.com/blogs/messenger-chatbots/',
+  'https://botpress.com/blog/top-facebook-messenger-chatbots'
+]
+Scraping https://beyondchats.com/blogs/messenger-chatbots/...
+Scraping https://botpress.com/blog/top-facebook-messenger-chatbots...
+Generating rewritten content with Gemini...
+GROQ_API_KEY is not set.
+Updating Laravel API...
+Article 4 updated successfully.
+
+Worker finished.

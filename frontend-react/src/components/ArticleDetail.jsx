@@ -27,7 +27,14 @@ const ArticleDetail = () => {
     const handleRefresh = async () => {
         setIsRefreshing(true);
         // Trigger the AI improvement process on the backend
-        await triggerArticleImprovement(id);
+        const result = await triggerArticleImprovement(id);
+
+        if (!result) {
+            console.error("Failed to trigger improvement.");
+            alert("Failed to trigger update. Please check backend logs/connectivity.");
+            setIsRefreshing(false);
+            return;
+        }
 
         // Poll for updates (every 3 seconds, up to 1 minute)
         let attempts = 0;
@@ -40,26 +47,27 @@ const ArticleDetail = () => {
             }
 
             const updated = await fetchArticleDetails(id);
-            // We check if content has changed or just rely on successful fetch. 
-            // Ideally check status, but if it was already UPDATED and we re-run, status won't change.
-            // For now, we just assume if it returns valid data, we update.
-            // But to show the "loading" effect, we really want to see the *new* data.
-            // Since we can't easily detect "newness" without timestamps or status change, 
-            // we will just poll until specific time or assume the user sees the spinner.
 
-            if (updated && updated.status === 'UPDATED') {
+            if (updated) {
+                // Always update the UI with the latest status (e.g. PROCESSING)
                 setCurrentArticle(updated);
-                setView('improved');
-                // If we were scraping a fresh article, status would go ORIGINAL -> UPDATED.
-                setIsRefreshing(false);
-            } else if (updated && updated.status === 'ORIGINAL') {
-                // Still processing
-                attempts++;
-                setTimeout(poll, 2000);
+
+                if (updated.status === 'UPDATED') {
+                    // Success! Switch to improved view and stop polling
+                    setView('improved');
+                    setIsRefreshing(false);
+                } else if (updated.status === 'PROCESSING' || updated.status === 'ORIGINAL') {
+                    // Still working, keep polling
+                    attempts++;
+                    setTimeout(poll, 3000);
+                } else {
+                    // Unknown status, stop? Or keep trying? Let's stop to be safe.
+                    setIsRefreshing(false);
+                }
             } else {
-                // Error or other state
+                // Fetch failed (network error?), retry a few times
                 attempts++;
-                setTimeout(poll, 2000);
+                setTimeout(poll, 3000);
             }
         };
 
