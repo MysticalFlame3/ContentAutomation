@@ -58,7 +58,12 @@ class ArticleController extends Controller
             $article = Article::findOrFail($id);
             
             // Update status so frontend knows to wait
-            $article->update(['status' => 'PROCESSING']);
+            // Also clear previous AI content and references to ensure a clean slate
+            $article->update([
+                'status' => 'PROCESSING',
+                'updated_content' => null
+            ]);
+            $article->references()->delete();
             
             // Absolute path to the worker directory and script
             $workerDir = base_path('../node-worker');

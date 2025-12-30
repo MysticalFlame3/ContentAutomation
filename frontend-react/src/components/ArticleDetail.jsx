@@ -134,7 +134,7 @@ const ArticleDetail = () => {
             </div>
 
             {/* References Section */}
-            {view === 'improved' && currentArticle.references && currentArticle.references.length > 0 && (
+            {view === 'improved' && currentArticle.status === 'UPDATED' && currentArticle.references && currentArticle.references.length > 0 && (
                 <div style={{ marginTop: '2rem' }}>
                     <h3 style={{ borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.5rem' }}>
                         Sources & Citations

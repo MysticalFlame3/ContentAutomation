@@ -1241,3 +1241,11 @@ DETAIL:  Failing row contains (5, The Complete Guide to Automating Customer Serv
 [2025-12-30 18:15:52] local.INFO: Launching worker in C:\Users\surya\Downloads\ContentAutomation\node-worker: start /B cmd /c "cd /d "C:\Users\surya\Downloads\ContentAutomation\node-worker" && node src/index.js 1 > "C:\Users\surya\Downloads\ContentAutomation\backend-laravel\storage\logs/node-worker.log" 2>&1"  
 [2025-12-30 18:16:27] local.INFO: Improve called for Article ID: 4  
 [2025-12-30 18:16:27] local.INFO: Launching worker in C:\Users\surya\Downloads\ContentAutomation\node-worker: start /B cmd /c "cd /d "C:\Users\surya\Downloads\ContentAutomation\node-worker" && node src/index.js 4 > "C:\Users\surya\Downloads\ContentAutomation\backend-laravel\storage\logs/node-worker.log" 2>&1"  
+[2025-12-30 18:21:48] local.INFO: Improve called for Article ID: 4  
+[2025-12-30 18:21:48] local.INFO: Launching worker in C:\Users\surya\Downloads\ContentAutomation\node-worker: start /B cmd /c "cd /d "C:\Users\surya\Downloads\ContentAutomation\node-worker" && node src/index.js 4 > "C:\Users\surya\Downloads\ContentAutomation\backend-laravel\storage\logs/node-worker.log" 2>&1"  
+[2025-12-30 18:24:05] local.INFO: Improve called for Article ID: 1  
+[2025-12-30 18:24:05] local.INFO: Launching worker in C:\Users\surya\Downloads\ContentAutomation\node-worker: start /B cmd /c "cd /d "C:\Users\surya\Downloads\ContentAutomation\node-worker" && node src/index.js 1 > "C:\Users\surya\Downloads\ContentAutomation\backend-laravel\storage\logs/node-worker.log" 2>&1"  
+[2025-12-30 18:24:24] local.INFO: Improve called for Article ID: 4  
+[2025-12-30 18:24:24] local.INFO: Launching worker in C:\Users\surya\Downloads\ContentAutomation\node-worker: start /B cmd /c "cd /d "C:\Users\surya\Downloads\ContentAutomation\node-worker" && node src/index.js 4 > "C:\Users\surya\Downloads\ContentAutomation\backend-laravel\storage\logs/node-worker.log" 2>&1"  
+[2025-12-30 18:24:40] local.INFO: Improve called for Article ID: 3  
+[2025-12-30 18:24:40] local.INFO: Launching worker in C:\Users\surya\Downloads\ContentAutomation\node-worker: start /B cmd /c "cd /d "C:\Users\surya\Downloads\ContentAutomation\node-worker" && node src/index.js 3 > "C:\Users\surya\Downloads\ContentAutomation\backend-laravel\storage\logs/node-worker.log" 2>&1"  

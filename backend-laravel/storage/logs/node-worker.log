@@ -1,17 +1,24 @@
-[dotenv@17.2.3] injecting env (3) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
-[dotenv@17.2.3] injecting env (0) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (3) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
 Starting Node Worker
-Targeting specific article ID: 4
-Processing Article: Boost Your Sales with Messenger Chatbots
+Targeting specific article ID: 3
+Processing Article: Can Good Customer Communication Fuel Growth?
 Found 2 competitor links: [
-  'https://beyondchats.com/blogs/messenger-chatbots/',
-  'https://botpress.com/blog/top-facebook-messenger-chatbots'
+  'https://www.getbeamer.com/blog/customer-communication-how-to',
+  'https://www.kommunicate.io/blog/right-customer-communication/'
 ]
-Scraping https://beyondchats.com/blogs/messenger-chatbots/...
-Scraping https://botpress.com/blog/top-facebook-messenger-chatbots...
+Scraping https://www.getbeamer.com/blog/customer-communication-how-to...
+Scraping https://www.kommunicate.io/blog/right-customer-communication/...
 Generating rewritten content with Gemini...
 Generating content with Groq (Llama 3.3)...
+Groq API Error: {
+  error: {
+    message: 'Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kdmqpsfefab9gev1trt95ay6` service tier `on_demand` on tokens per day (TPD): Limit 100000, Used 98458, Requested 2477. Please try again in 13m27.84s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing',
+    type: 'tokens',
+    code: 'rate_limit_exceeded'
+  }
+}
 Updating Laravel API...
-Article 4 updated successfully.
+Article 3 updated successfully.
 
 Worker finished.
