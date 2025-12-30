@@ -48,9 +48,18 @@ const main = async () => {
             if (content) referenceContents.push(content);
         }
 
-        // 4. Gemini Rewrite
-        console.log("Generating rewritten content with Gemini...");
+        // 4. Gemini/Groq Rewrite
+        console.log("Generating rewritten content with LLM...");
         const newContent = await rewriteArticle(article.title, article.original_content, referenceContents, topLinks);
+
+        if (!newContent) {
+            console.error(`Failed to generate content for Article ${article.id}. Reverting status.`);
+            // Revert state so user can try again
+            await updateArticle(article.id, {
+                status: 'ORIGINAL'
+            });
+            continue;
+        }
 
         // 5. Update Laravel
         console.log("Updating Laravel API...");

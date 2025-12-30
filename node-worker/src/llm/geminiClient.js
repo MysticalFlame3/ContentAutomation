@@ -38,34 +38,41 @@ const rewriteArticle = async (originalTitle, originalContent, referenceContents,
     ${referenceContents[1] || 'N/A'}
     `;
 
-    try {
-        console.log("Generating content with Groq (Llama 3.3)...");
-        const response = await axios.post(API_URL, {
-            model: "llama-3.3-70b-versatile",
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userPrompt }
-            ],
-            stream: false,
-            temperature: 0.7
-        }, {
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json'
+    const models = [
+        "llama-3.3-70b-versatile",
+        "mixtral-8x7b-32768",
+        "llama-3.1-8b-instant"
+    ];
+
+    for (const model of models) {
+        try {
+            console.log(`Generating content with Groq (${model})...`);
+            const response = await axios.post(API_URL, {
+                model: model,
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: userPrompt }
+                ],
+                stream: false,
+                temperature: 0.7
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.data && response.data.choices && response.data.choices.length > 0) {
+                return response.data.choices[0].message.content;
             }
-        });
-
-        if (response.data && response.data.choices && response.data.choices.length > 0) {
-            return response.data.choices[0].message.content;
-        } else {
-            console.error("Unexpected Groq response:", response.data);
-            return originalContent;
+        } catch (error) {
+            console.error(`Groq API Error (${model}):`, error.response ? error.response.data.error.message : error.message);
+            // Continue to next model
         }
-
-    } catch (error) {
-        console.error("Groq API Error:", error.response ? error.response.data : error.message);
-        return originalContent;
     }
+
+    console.error("All models failed.");
+    return null; // Return null to indicate failure
 };
 
 module.exports = { rewriteArticle };
