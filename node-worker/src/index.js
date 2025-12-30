@@ -4,7 +4,7 @@ const { scrapeContent } = require('./scraper/articleScraper');
 const { rewriteArticle } = require('./llm/geminiClient');
 
 const main = async () => {
-    console.log("Starting Node Worker...");
+    console.log("Starting Node Worker");
 
     // 1. Fetch articles from Laravel
     const articles = await fetchArticles();
