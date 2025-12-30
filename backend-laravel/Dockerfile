@@ -13,17 +13,25 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy project files
+# Copy composer files first (important for caching)
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies WITHOUT running scripts
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
+# Copy rest of the application
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Ensure required directories exist
+RUN mkdir -p storage/framework/{cache,sessions,views} bootstrap/cache
 
 # Ensure SQLite DB exists
 RUN mkdir -p database && touch database/database.sqlite
 
-# Generate key and migrate
+# Generate app key AFTER files exist
 RUN php artisan key:generate
+
+# Run migrations
 RUN php artisan migrate --force
 
 # Expose Render port
