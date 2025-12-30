@@ -1,22 +1,20 @@
-FROM php:8.2-cli
+FROM php:8.2-apache
 
-# Install system dependencies
+# Enable Apache rewrite
+RUN a2enmod rewrite
+
+# Install required system packages
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
-    libzip-dev \
-    libsqlite3-dev \
-    && docker-php-ext-install \
-        pdo \
-        pdo_sqlite \
-        zip \
-        mbstring \
-        bcmath
+    sqlite3 \
+    libsqlite3-dev
+
+# Enable PHP extensions (already present, just enable)
+RUN docker-php-ext-enable pdo_sqlite
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Allow Composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Set working directory
@@ -25,34 +23,33 @@ WORKDIR /var/www/html
 # Copy composer files first
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies (no scripts yet)
+# Install dependencies
 RUN composer install \
     --no-dev \
     --optimize-autoloader \
-    --no-scripts \
     --no-interaction
 
-# Copy rest of application
+# Copy the rest of the application
 COPY . .
 
-# Create required directories
+# Ensure storage & cache dirs
 RUN mkdir -p \
     storage/framework/cache \
     storage/framework/sessions \
     storage/framework/views \
-    bootstrap/cache
+    bootstrap/cache \
+    database
 
-# Ensure SQLite database exists
-RUN mkdir -p database && touch database/database.sqlite
+# SQLite DB
+RUN touch database/database.sqlite
 
-# Generate app key
+# Permissions
+RUN chown -R www-data:www-data /var/www/html
+
+# Generate key & migrate
 RUN php artisan key:generate
-
-# Run migrations
 RUN php artisan migrate --force
 
-# Expose Render port
-EXPOSE 10000
+EXPOSE 80
 
-# Start Laravel
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
+CMD ["apache2-foreground"]
