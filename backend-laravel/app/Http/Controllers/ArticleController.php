@@ -60,12 +60,13 @@ class ArticleController extends Controller
             // Update status so frontend knows to wait
             $article->update(['status' => 'PROCESSING']);
             
-            // Absolute path to the worker script
-            $rawPath = base_path('../node-worker/src/index.js');
-            $scriptPath = realpath($rawPath);
+            // Absolute path to the worker directory and script
+            $workerDir = base_path('../node-worker');
+            $workerDir = realpath($workerDir); // Resolve to absolute path
+            $scriptPath = $workerDir . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'index.js';
             
-            if (!$scriptPath || !file_exists($scriptPath)) {
-                \Illuminate\Support\Facades\Log::error("Node worker script not found at: " . $rawPath);
+            if (!$workerDir || !file_exists($scriptPath)) {
+                \Illuminate\Support\Facades\Log::error("Node worker script not found at: " . $scriptPath);
                 return response()->json(['error' => 'Worker script not found'], 500);
             }
 
@@ -77,10 +78,10 @@ class ArticleController extends Controller
             }
 
             // Command to run node script in background (Windows compatible)
-            // wrapped in cmd /c and start /B to ensure it detaches properly
-            $cmd = "start /B cmd /c node \"$scriptPath\" $id > \"$logPath\" 2>&1";
+            // We change directory (cd) to the worker folder so .env is found
+            $cmd = "start /B cmd /c \"cd /d \"$workerDir\" && node src/index.js $id > \"$logPath\" 2>&1\"";
             
-            \Illuminate\Support\Facades\Log::info("Launching worker: $cmd");
+            \Illuminate\Support\Facades\Log::info("Launching worker in $workerDir: $cmd");
 
             // Execute
             pclose(popen($cmd, "r"));
