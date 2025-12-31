@@ -11,7 +11,20 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/health', function () {
-    return response()->json(['ok' => true]);
+// Route::get('/health', function () {
+//     return response()->json(['ok' => true]);
+// });/
+
+Route::get('/db-test', function () {
+    try {
+        \DB::connection()->getPdo();
+        return response()->json(['db' => 'connected']);
+    } catch (\Exception $e) {
+        return response()->json([
+            'db' => 'failed',
+            'error' => $e->getMessage()
+        ], 500);
+    }
 });
+
 
