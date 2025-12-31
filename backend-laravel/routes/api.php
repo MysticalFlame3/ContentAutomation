@@ -15,14 +15,14 @@ Route::post('/scrape', [ArticleController::class, 'triggerScrape']);
 //     return response()->json(['ok' => true]);
 // });/
 
-// Route::get('/tables', function () {
-//     return \DB::select("
-//         SELECT table_name 
-//         FROM information_schema.tables 
-//         WHERE table_schema = 'public'
-//         ORDER BY table_name
-//     ");
-// });
+Route::get('/tables', function () {
+    return \DB::select("
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public'
+        ORDER BY table_name
+    ");
+});
 
 
 
