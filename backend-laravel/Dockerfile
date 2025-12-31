@@ -8,11 +8,11 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-COPY backend-laravel/composer.json backend-laravel/composer.lock ./
+COPY composer.json composer.lock ./
 
 RUN composer install --no-dev --no-interaction --no-scripts
 
-COPY backend-laravel .
+COPY . .
 
 RUN mkdir -p \
     storage/framework/cache \
@@ -22,5 +22,4 @@ RUN mkdir -p \
     && chmod -R 775 storage bootstrap
 
 EXPOSE 8000
-
 CMD php artisan serve --host=0.0.0.0 --port=8000
