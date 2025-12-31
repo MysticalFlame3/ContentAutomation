@@ -15,16 +15,14 @@ use Illuminate\Support\Facades\Route;
 //     return response()->json(['ok' => true]);
 // });/
 
-Route::get('/db-test', function () {
-    try {
-        \DB::connection()->getPdo();
-        return response()->json(['db' => 'connected']);
-    } catch (\Exception $e) {
-        return response()->json([
-            'db' => 'failed',
-            'error' => $e->getMessage()
-        ], 500);
-    }
+Route::get('/tables', function () {
+    return \DB::select("
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public'
+        ORDER BY table_name
+    ");
 });
+
 
 
