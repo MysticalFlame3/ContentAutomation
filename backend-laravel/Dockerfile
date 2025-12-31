@@ -14,4 +14,16 @@ RUN composer install --no-dev --no-interaction --no-scripts
 
 EXPOSE 8000
 
+RUN composer install --no-dev --no-interaction --no-scripts
+
+RUN mkdir -p \
+    storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/views \
+    bootstrap/cache \
+    && chmod -R 775 storage bootstrap
+
+EXPOSE 8000
+
 CMD php artisan serve --host=0.0.0.0 --port=8000
+
