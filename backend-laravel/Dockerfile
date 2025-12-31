@@ -4,17 +4,15 @@ RUN apt-get update && apt-get install -y \
     git unzip libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql
 
-WORKDIR /app
-
-COPY . .
-
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+WORKDIR /app
+
+COPY backend-laravel/composer.json backend-laravel/composer.lock ./
+
 RUN composer install --no-dev --no-interaction --no-scripts
 
-EXPOSE 8000
-
-RUN composer install --no-dev --no-interaction --no-scripts
+COPY backend-laravel .
 
 RUN mkdir -p \
     storage/framework/cache \
@@ -26,4 +24,3 @@ RUN mkdir -p \
 EXPOSE 8000
 
 CMD php artisan serve --host=0.0.0.0 --port=8000
-
