@@ -1,16 +1,14 @@
 FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    libpq-dev \
+    git unzip libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-COPY composer.json composer.lock ./
+COPY backend-laravel/ ./
 
 RUN composer install \
     --no-dev \
@@ -18,12 +16,13 @@ RUN composer install \
     --no-progress \
     --optimize-autoloader
 
-COPY . .
-
-RUN mkdir -p storage/framework/{cache,sessions,views} \
+RUN mkdir -p \
+    storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/views \
     bootstrap/cache \
- && chmod -R 775 storage bootstrap/cache
+    && chmod -R 775 storage bootstrap
 
 EXPOSE 8000
 
-CMD php -S 0.0.0.0:$PORT -t public
+CMD php artisan serve --host=0.0.0.0 --port=8000
