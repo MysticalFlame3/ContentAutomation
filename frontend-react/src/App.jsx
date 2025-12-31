@@ -12,10 +12,19 @@ const ArticleList = () => {
   useEffect(() => {
     const loadArticles = async () => {
       setLoading(true);
-      const data = await fetchArticles();
-      const sorted = data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-      setArticles(sorted);
-      setLoading(false);
+      try {
+        const data = await fetchArticles();
+        if (Array.isArray(data)) {
+          const sorted = data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+          setArticles(sorted);
+        } else {
+          console.error("Fetched data is not an array:", data);
+        }
+      } catch (err) {
+        console.error("Failed to load articles:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     loadArticles();
   }, []);
