@@ -269,3 +269,126 @@ Designed for clarity, extensibility, and real-world relevance
 ✔ Database connected
 ✔ Worker processing articles
 ✔ Frontend integrated
+
+High-Level Execution Flow
+
+Article (DB)
+   ↓
+Node Worker (Scheduler + Orchestrator)
+   ↓
+Search Engine (Serper / Google)
+   ↓
+Web Scraper
+   ↓
+LLM (Groq / Gemini)
+   ↓
+Laravel API
+   ↓
+Database
+   ↓
+Frontend
+
+
+How Articles Are Picked (Automatic Processing)
+Backend Role
+
+Stores articles with status
+
+Exposes API:
+
+GET /api/articles
+
+Each article has:
+
+{
+  "id": 5,
+  "title": "...",
+  "original_content": "...",
+  "updated_content": null,
+  "status": "ORIGINAL"
+}
+
+What Serper Does
+
+Acts as a Google Search API
+
+Returns structured search results
+
+Faster and more reliable than scraping Google directly
+
+Scraping Phase – Controlled, Defensive Scraping
+
+Each competitor URL is scraped:
+
+const content = await scrapeContent(url);
+
+Important Design Points
+
+Scraper failures are non-fatal
+
+403 / blocked pages are skipped
+
+Partial data is acceptable
+
+This ensures:
+
+Worker never crashes
+
+LLM Phase – How Groq Models + Fallback Work
+
+LLM Fallback Strategy (Production-Grade)
+
+Our system uses a model fallback chain.
+
+Smaller model first → cheaper & faster
+
+Bigger model only when needed
+
+Zero manual intervention
+
+Updating Backend – Why via API, Not DB
+
+Backend Responsibilities (Laravel)
+
+Laravel does only these things:
+
+Validate input
+
+Update database
+
+Maintain relations (articles ↔ references)
+
+Expose APIs to frontend
+
+Backend Responsibilities (Laravel)
+
+Laravel does only these things:
+
+Validate input
+
+Update database
+
+Maintain relations (articles ↔ references)
+
+Expose APIs to frontend
+
+If traffic grows:
+
+Add more Node Workers
+
+Use job queues (BullMQ / RabbitMQ)
+
+Add cron triggers
+
+Swap LLM providers
+
+Add caching layers
+
+Failure Scenarios & Handling
+Failure	       Handling
+Search API fails	Skip article
+Scraper blocked	Skip URL
+LLM rate-limited	Fallback model
+LLM fails	       Article reverted to ORIGINAL
+Worker crash	       Restart worker
+Backend down	       Worker retries
