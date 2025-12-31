@@ -61,17 +61,15 @@ class ArticleController extends Controller
 
             $article = Article::findOrFail($id);
             
-            // Update status so frontend knows to wait
-            // Also clear previous AI content and references to ensure a clean slate
+            
             $article->update([
                 'status' => 'PROCESSING',
                 'updated_content' => null
             ]);
             $article->references()->delete();
             
-            // Absolute path to the worker directory and script
             $workerDir = base_path('../node-worker');
-            $workerDir = realpath($workerDir); // Resolve to absolute path
+            $workerDir = realpath($workerDir); 
             $scriptPath = $workerDir . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'index.js';
             
             if (!$workerDir || !file_exists($scriptPath)) {
@@ -81,18 +79,15 @@ class ArticleController extends Controller
 
             $logPath = storage_path('logs/node-worker.log');
             
-            // Ensure log directory exists
             if (!file_exists(dirname($logPath))) {
                 mkdir(dirname($logPath), 0755, true);
             }
 
-            // Command to run node script in background (Windows compatible)
-            // We change directory (cd) to the worker folder so .env is found
+           
             $cmd = "start /B cmd /c \"cd /d \"$workerDir\" && node src/index.js $id > \"$logPath\" 2>&1\"";
             
             \Illuminate\Support\Facades\Log::info("Launching worker in $workerDir: $cmd");
 
-            // Execute
             pclose(popen($cmd, "r"));
             
             return response()->json([
