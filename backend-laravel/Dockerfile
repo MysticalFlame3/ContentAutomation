@@ -1,43 +1,26 @@
-FROM php:8.4-apache
+FROM php:8.3-cli
 
-RUN a2enmod rewrite
-
+# System dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
-    sqlite3 \
-    libsqlite3-dev
+    libpq-dev \
+    && docker-php-ext-install pdo pdo_pgsql
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-ENV COMPOSER_ALLOW_SUPERUSER=1
+# Set working directory
+WORKDIR /app
 
-WORKDIR /var/www/html
-
-# ⬅️ COPY FULL APP FIRST (THIS FIXES EVERYTHING)
+# Copy everything
 COPY . .
 
-# Install dependencies (artisan now exists)
-RUN composer install \
-    --no-dev \
-    --optimize-autoloader \
-    --no-interaction
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Ensure required directories
-RUN mkdir -p \
-    storage/framework/cache \
-    storage/framework/sessions \
-    storage/framework/views \
-    bootstrap/cache \
-    database
+# Install dependencies WITHOUT scripts (important)
+RUN composer install --no-dev --no-interaction --no-scripts
 
-# Create SQLite DB
-RUN touch database/database.sqlite
+# Expose port
+EXPOSE 8000
 
-RUN chown -R www-data:www-data /var/www/html
-
-# Laravel setup
-RUN php artisan key:generate
-RUN php artisan migrate --force
-
-EXPOSE 80
-CMD ["apache2-foreground"]
+# Start Laravel
+CMD php artisan serve --host=0.0.0.0 --port=8000
