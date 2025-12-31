@@ -13,15 +13,16 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /var/www/html
 
-COPY composer.json composer.lock ./
+# ⬅️ COPY FULL APP FIRST (THIS FIXES EVERYTHING)
+COPY . .
 
+# Install dependencies (artisan now exists)
 RUN composer install \
     --no-dev \
     --optimize-autoloader \
     --no-interaction
 
-COPY . .
-
+# Ensure required directories
 RUN mkdir -p \
     storage/framework/cache \
     storage/framework/sessions \
@@ -29,9 +30,12 @@ RUN mkdir -p \
     bootstrap/cache \
     database
 
+# Create SQLite DB
 RUN touch database/database.sqlite
+
 RUN chown -R www-data:www-data /var/www/html
 
+# Laravel setup
 RUN php artisan key:generate
 RUN php artisan migrate --force
 
