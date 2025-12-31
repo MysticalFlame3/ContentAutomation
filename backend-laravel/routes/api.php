@@ -27,13 +27,20 @@ Route::get('/tables', function () {
 });
 
 Route::get('/__seed', function () {
-    $article = Article::create([
-        'title' => 'Test Article',
-        'original_content' => 'This is a test article',
-        'status' => 'NEW',
-    ]);
+    try {
+        $article = \App\Models\Article::create([
+            'title' => 'Test Article',
+            'original_content' => 'This is a test article',
+            'source_url' => 'https://example.com/test-article-' . time(),
+            'status' => 'ORIGINAL',
+        ]);
 
-    return response()->json($article);
+        return response()->json($article);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+        ], 500);
+    }
 });
 
 
