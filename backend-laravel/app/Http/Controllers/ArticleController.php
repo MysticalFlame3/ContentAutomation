@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
+    public function status()
+    {
+        return response()->json(['status' => 'backend alive']);
+    }
+
     public function index()
     {
         return response()->json(Article::with('references')->get());
@@ -33,7 +38,6 @@ class ArticleController extends Controller
             'status' => $validated['status'],
         ]);
 
-        // Use array_key_exists to check if references key was sent, even if empty array
         if (array_key_exists('references', $validated)) {
             $article->references()->delete();
             foreach ($validated['references'] as $url) {
