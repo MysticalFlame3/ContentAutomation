@@ -8,14 +8,18 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
+# Copy everything first
 COPY . .
 
+# Install dependencies WITHOUT running artisan
 RUN composer install \
     --no-dev \
     --no-interaction \
     --no-progress \
-    --optimize-autoloader
+    --optimize-autoloader \
+    --no-scripts
 
+# Prepare Laravel writable dirs
 RUN mkdir -p \
     storage/framework/cache \
     storage/framework/sessions \
