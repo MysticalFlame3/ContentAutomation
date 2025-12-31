@@ -24,5 +24,11 @@ Route::get('/tables', function () {
     ");
 });
 
-
+Route::get('/__migrate', function () {
+    Artisan::call('migrate', ['--force' => true]);
+    return response()->json([
+        'status' => 'migrations executed',
+        'output' => Artisan::output(),
+    ]);
+});
 
