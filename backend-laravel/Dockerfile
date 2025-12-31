@@ -10,9 +10,6 @@ RUN apt-get update && apt-get install -y \
     sqlite3 \
     libsqlite3-dev
 
-# Enable PHP extensions (already present, just enable)
-RUN docker-php-ext-enable pdo_sqlite
-
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -29,10 +26,10 @@ RUN composer install \
     --optimize-autoloader \
     --no-interaction
 
-# Copy the rest of the application
+# Copy application code
 COPY . .
 
-# Ensure storage & cache dirs
+# Ensure required directories
 RUN mkdir -p \
     storage/framework/cache \
     storage/framework/sessions \
@@ -40,13 +37,13 @@ RUN mkdir -p \
     bootstrap/cache \
     database
 
-# SQLite DB
+# Create SQLite database file
 RUN touch database/database.sqlite
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html
 
-# Generate key & migrate
+# Laravel setup
 RUN php artisan key:generate
 RUN php artisan migrate --force
 
