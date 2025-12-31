@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ArticleController;
+use App\Models\Article;
+
 
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/articles/{id}', [ArticleController::class, 'show']);
@@ -24,5 +26,14 @@ Route::get('/tables', function () {
     ");
 });
 
+Route::get('/__seed', function () {
+    $article = Article::create([
+        'title' => 'Test Article',
+        'original_content' => 'This is a test article',
+        'status' => 'NEW',
+    ]);
+
+    return response()->json($article);
+});
 
 
