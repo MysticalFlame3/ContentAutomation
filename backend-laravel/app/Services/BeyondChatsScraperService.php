@@ -39,14 +39,12 @@ class BeyondChatsScraperService
             // Filter for blog posts
             $blogLinks = array_filter($articleLinks, function ($link) {
                 return (str_contains($link, '/blog/') || str_contains($link, '/blogs/')) 
-                       && !str_ends_with($link, '/blog/') // Exclude index
+                       && !str_ends_with($link, '/blog/')
                        && !str_ends_with($link, '/blogs/');
             });
 
-            // Sort by length or just take unique to remove duplicates
             $blogLinks = array_unique($blogLinks);
             
-            // Limit to 5
             $blogLinks = array_slice($blogLinks, 0, 5);
 
             \Log::info("Found links: " . implode(', ', $blogLinks));
